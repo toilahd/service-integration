@@ -1,0 +1,26 @@
+{ 
+  "type": "module",
+  "name": "service-integration",
+  "version": "1.0.0",
+  "description": "% service-integration",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/toilahd/service-integration.git"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "kafkajs": "^2.2.4",
+    "uuid": "^9.0.0",
+    "winston": "^3.9.0",
+    "dotenv": "^16.3.1 "
+  }, 
+  "devDependencies": {
+    "nodemon": "^3.1.10",
+    "concurrently": "^8.2.0"
+  } 
+}

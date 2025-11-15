@@ -137,7 +137,7 @@ Core components:
 
 ### 5.3 Topics & partitions
 
-> TODO
+> TODO  
 
 ### 5.4 Consumer groups
 
