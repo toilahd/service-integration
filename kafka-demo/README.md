@@ -303,3 +303,8 @@ grep "Order created" order-service/logs/combined.log | wc -l
 - **Automatic Cleanup:** Old files deleted when limit reached
 
 
+## Testing
+
+```
+curl -X POST http://localhost:3000/api/orders -H "Content-Type: application/json" -d '{"customerId":"customer-456","items":[{"productId":"laptop-pro","quantity":1,"price":1299.99}],"totalAmount":1299.99}'
+```
