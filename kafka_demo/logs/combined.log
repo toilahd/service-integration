@@ -1,0 +1,61 @@
+{"label":"OrderProducer","level":"info","message":"Producer connected successfully","service":"OrderProducer","timestamp":"2025-11-16 16:42:17"}
+{"label":"Server","level":"info","message":"Order Service running on port 3000","service":"Server","timestamp":"2025-11-16 16:42:17"}
+{"label":"Server","level":"info","message":"Health check: http://localhost:3000/health","service":"Server","timestamp":"2025-11-16 16:42:17"}
+{"label":"Server","level":"info","message":"API endpoints: http://localhost:3000/api","service":"Server","timestamp":"2025-11-16 16:42:17"}
+{"label":"OrderProducer","level":"info","message":"Producer connected successfully","service":"OrderProducer","timestamp":"2025-11-16 16:42:57"}
+{"label":"Server","level":"info","message":"Order Service running on port 3000","service":"Server","timestamp":"2025-11-16 16:42:57"}
+{"label":"Server","level":"info","message":"Health check: http://localhost:3000/health","service":"Server","timestamp":"2025-11-16 16:42:57"}
+{"label":"Server","level":"info","message":"API endpoints: http://localhost:3000/api","service":"Server","timestamp":"2025-11-16 16:42:57"}
+{"label":"OrderProducer","level":"info","message":"Producer connected successfully","service":"OrderProducer","timestamp":"2025-11-16 16:43:11"}
+{"label":"Server","level":"info","message":"Order Service running on port 3000","service":"Server","timestamp":"2025-11-16 16:43:11"}
+{"label":"Server","level":"info","message":"Health check: http://localhost:3000/health","service":"Server","timestamp":"2025-11-16 16:43:11"}
+{"label":"Server","level":"info","message":"API endpoints: http://localhost:3000/api","service":"Server","timestamp":"2025-11-16 16:43:11"}
+{"label":"PaymentConsumer","level":"info","message":"Consumer connected","service":"PaymentConsumer","timestamp":"2025-11-16 16:43:16"}
+{"label":"InventoryConsumer","level":"info","message":"Consumer connected","service":"InventoryConsumer","timestamp":"2025-11-16 16:43:26"}
+{"label":"NotificationConsumer","level":"info","message":"Consumer connected","service":"NotificationConsumer","timestamp":"2025-11-16 16:43:43"}
+{"ip":"::1","label":"ExpressApp","level":"info","message":"POST /api/orders","service":"ExpressApp","timestamp":"2025-11-16 16:43:56","userAgent":"curl/8.15.0"}
+{"customerId":"customer-123","label":"OrderProducer","level":"info","message":"Order created","orderId":"392b9fd5-0ae8-4bd7-b2b0-4e0122b6d96c","service":"OrderProducer","timestamp":"2025-11-16 16:43:56","totalAmount":59.98}
+{"label":"PaymentConsumer","level":"info","message":"Received order event","offset":"0","orderId":"392b9fd5-0ae8-4bd7-b2b0-4e0122b6d96c","partition":1,"service":"PaymentConsumer","timestamp":"2025-11-16 16:43:56"}
+{"label":"NotificationConsumer","level":"info","message":"Received order event","offset":"0","orderId":"392b9fd5-0ae8-4bd7-b2b0-4e0122b6d96c","partition":1,"service":"NotificationConsumer","timestamp":"2025-11-16 16:43:56"}
+{"label":"InventoryConsumer","level":"info","message":"Received order event","offset":"0","orderId":"392b9fd5-0ae8-4bd7-b2b0-4e0122b6d96c","partition":1,"service":"InventoryConsumer","timestamp":"2025-11-16 16:43:56"}
+{"amount":59.98,"customerId":"customer-123","label":"PaymentService","level":"info","message":"Processing payment","orderId":"392b9fd5-0ae8-4bd7-b2b0-4e0122b6d96c","service":"PaymentService","timestamp":"2025-11-16 16:43:56"}
+{"customerId":"customer-123","label":"NotificationService","level":"info","message":"Sending order notifications","orderId":"392b9fd5-0ae8-4bd7-b2b0-4e0122b6d96c","service":"NotificationService","timestamp":"2025-11-16 16:43:56"}
+{"itemCount":1,"label":"InventoryService","level":"info","message":"Reserving inventory","orderId":"392b9fd5-0ae8-4bd7-b2b0-4e0122b6d96c","service":"InventoryService","timestamp":"2025-11-16 16:43:56"}
+{"label":"NotificationService","level":"info","message":"Email sent","orderId":"392b9fd5-0ae8-4bd7-b2b0-4e0122b6d96c","service":"NotificationService","subject":"Order Confirmation - 392b9fd5-0ae8-4bd7-b2b0-4e0122b6d96c","timestamp":"2025-11-16 16:43:57","to":"customer_customer-123@example.com"}
+{"label":"InventoryService","level":"info","message":"Items reserved","orderId":"392b9fd5-0ae8-4bd7-b2b0-4e0122b6d96c","productId":"item-001","productName":"Laptop","remainingStock":98,"reserved":2,"service":"InventoryService","timestamp":"2025-11-16 16:43:57"}
+{"itemCount":1,"label":"InventoryConsumer","level":"info","message":"Inventory reservation completed","orderId":"392b9fd5-0ae8-4bd7-b2b0-4e0122b6d96c","service":"InventoryConsumer","timestamp":"2025-11-16 16:43:57"}
+{"label":"NotificationService","level":"info","message":"SMS sent","orderId":"392b9fd5-0ae8-4bd7-b2b0-4e0122b6d96c","service":"NotificationService","timestamp":"2025-11-16 16:43:57","to":"+1234567890"}
+{"itemCount":1,"label":"InventoryService","level":"info","message":"All items reserved successfully","orderId":"392b9fd5-0ae8-4bd7-b2b0-4e0122b6d96c","service":"InventoryService","timestamp":"2025-11-16 16:43:57"}
+{"amount":59.98,"label":"PaymentService","level":"info","message":"Payment successful","orderId":"392b9fd5-0ae8-4bd7-b2b0-4e0122b6d96c","service":"PaymentService","timestamp":"2025-11-16 16:43:57","transactionId":"txn_1763286237705_3zddiw1as"}
+{"label":"PaymentConsumer","level":"info","message":"Payment processing completed","orderId":"392b9fd5-0ae8-4bd7-b2b0-4e0122b6d96c","service":"PaymentConsumer","timestamp":"2025-11-16 16:43:57","transactionId":"txn_1763286237705_3zddiw1as"}
+{"label":"NotificationService","level":"info","message":"Push notification sent","orderId":"392b9fd5-0ae8-4bd7-b2b0-4e0122b6d96c","service":"NotificationService","timestamp":"2025-11-16 16:43:57","title":"Order Received! 🎉","userId":"customer-123"}
+{"label":"NotificationConsumer","level":"info","message":"Notifications sent successfully","notificationCount":3,"orderId":"392b9fd5-0ae8-4bd7-b2b0-4e0122b6d96c","service":"NotificationConsumer","timestamp":"2025-11-16 16:43:57"}
+{"label":"NotificationService","level":"info","message":"All notifications sent successfully","notificationCount":3,"orderId":"392b9fd5-0ae8-4bd7-b2b0-4e0122b6d96c","service":"NotificationService","timestamp":"2025-11-16 16:43:57"}
+{"label":"OrderProducer","level":"info","message":"Producer connected successfully","service":"OrderProducer","timestamp":"2025-11-16 16:45:02"}
+{"label":"Server","level":"info","message":"Order Service running on port 3000","service":"Server","timestamp":"2025-11-16 16:45:03"}
+{"label":"Server","level":"info","message":"Health check: http://localhost:3000/health","service":"Server","timestamp":"2025-11-16 16:45:03"}
+{"label":"Server","level":"info","message":"API endpoints: http://localhost:3000/api","service":"Server","timestamp":"2025-11-16 16:45:03"}
+{"label":"OrderProducer","level":"info","message":"Producer connected successfully","service":"OrderProducer","timestamp":"2025-11-16 16:45:24"}
+{"label":"Server","level":"info","message":"Order Service running on port 3000","service":"Server","timestamp":"2025-11-16 16:45:24"}
+{"label":"Server","level":"info","message":"Health check: http://localhost:3000/health","service":"Server","timestamp":"2025-11-16 16:45:24"}
+{"label":"Server","level":"info","message":"API endpoints: http://localhost:3000/api","service":"Server","timestamp":"2025-11-16 16:45:24"}
+{"label":"OrderProducer","level":"info","message":"Producer connected successfully","service":"OrderProducer","timestamp":"2025-11-16 16:54:38"}
+{"label":"Server","level":"info","message":"Order Service running on port 3000","service":"Server","timestamp":"2025-11-16 16:54:38"}
+{"label":"Server","level":"info","message":"Health check: http://localhost:3000/health","service":"Server","timestamp":"2025-11-16 16:54:38"}
+{"label":"Server","level":"info","message":"API endpoints: http://localhost:3000/api","service":"Server","timestamp":"2025-11-16 16:54:38"}
+{"label":"OrderProducer","level":"info","message":"Producer connected successfully","service":"OrderProducer","timestamp":"2025-11-16 16:55:54"}
+{"label":"Server","level":"info","message":"Order Service running on port 3000","service":"Server","timestamp":"2025-11-16 16:55:54"}
+{"label":"Server","level":"info","message":"Health check: http://localhost:3000/health","service":"Server","timestamp":"2025-11-16 16:55:54"}
+{"label":"Server","level":"info","message":"API endpoints: http://localhost:3000/api","service":"Server","timestamp":"2025-11-16 16:55:54"}
+{"label":"OrderProducer","level":"info","message":"Producer connected successfully","service":"OrderProducer","timestamp":"2025-11-16 16:57:22"}
+{"label":"Server","level":"info","message":"Order Service running on port 3000","service":"Server","timestamp":"2025-11-16 16:57:22"}
+{"label":"Server","level":"info","message":"Health check: http://localhost:3000/health","service":"Server","timestamp":"2025-11-16 16:57:22"}
+{"label":"Server","level":"info","message":"API endpoints: http://localhost:3000/api","service":"Server","timestamp":"2025-11-16 16:57:22"}
+{"label":"OrderProducer","level":"info","message":"Producer connected successfully","service":"OrderProducer","timestamp":"2025-11-16 16:57:24"}
+{"label":"Server","level":"info","message":"Order Service running on port 3000","service":"Server","timestamp":"2025-11-16 16:57:24"}
+{"label":"Server","level":"info","message":"Health check: http://localhost:3000/health","service":"Server","timestamp":"2025-11-16 16:57:24"}
+{"label":"Server","level":"info","message":"API endpoints: http://localhost:3000/api","service":"Server","timestamp":"2025-11-16 16:57:24"}
+{"label":"OrderProducer","level":"info","message":"Producer connected successfully","service":"OrderProducer","timestamp":"2025-11-16 16:57:38"}
+{"label":"Server","level":"info","message":"Order Service running on port 3000","service":"Server","timestamp":"2025-11-16 16:57:38"}
+{"label":"Server","level":"info","message":"Health check: http://localhost:3000/health","service":"Server","timestamp":"2025-11-16 16:57:38"}
+{"label":"Server","level":"info","message":"API endpoints: http://localhost:3000/api","service":"Server","timestamp":"2025-11-16 16:57:38"}
