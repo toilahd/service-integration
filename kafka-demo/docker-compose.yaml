@@ -1,0 +1,110 @@
+services:
+  # Kafka Service
+  kafka:
+    image: apache/kafka:latest
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      # KRaft mode configuration
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
+      KAFKA_LISTENERS: 'PLAINTEXT://:29092,CONTROLLER://:9093,PLAINTEXT_HOST://:9092'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:9093'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_NUM_PARTITIONS: 3
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+    healthcheck:
+      test: ["CMD-SHELL", "echo 'Skipping healthcheck'; exit 0"]
+    networks:
+      - microservices-network
+
+  # Order Service (REST API + Producer)
+  order-service:
+    build:
+      context: .
+      dockerfile: order-service/Dockerfile
+    container_name: order-service
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - KAFKA_BROKER=kafka:29092
+      - LOG_LEVEL=info
+    depends_on:
+      kafka:
+        condition: service_healthy
+    volumes:
+      - ./order-service/logs:/app/order-service/logs
+    networks:
+      - microservices-network
+    restart: unless-stopped
+
+  # Payment Service (Consumer)
+  payment-service:
+    build:
+      context: .
+      dockerfile: payment-service/Dockerfile
+    container_name: payment-service
+    environment:
+      - KAFKA_BROKER=kafka:29092
+      - LOG_LEVEL=info
+    depends_on:
+      kafka:
+        condition: service_healthy
+    volumes:
+      - ./payment-service/logs:/app/payment-service/logs
+    networks:
+      - microservices-network
+    restart: unless-stopped
+
+  # Inventory Service (Consumer)
+  inventory-service:
+    build:
+      context: .
+      dockerfile: inventory-service/Dockerfile
+    container_name: inventory-service
+    environment:
+      - KAFKA_BROKER=kafka:29092
+      - LOG_LEVEL=info
+    depends_on:
+      kafka:
+        condition: service_healthy
+    volumes:
+      - ./inventory-service/logs:/app/inventory-service/logs
+    networks:
+      - microservices-network
+    restart: unless-stopped
+
+  # Notification Service (Consumer)
+  notification-service:
+    build:
+      context: .
+      dockerfile: notification-service/Dockerfile
+    container_name: notification-service
+    environment:
+      - KAFKA_BROKER=kafka:29092
+      - LOG_LEVEL=info
+    depends_on:
+      kafka:
+        condition: service_healthy
+    volumes:
+      - ./notification-service/logs:/app/notification-service/logs
+    networks:
+      - microservices-network
+    restart: unless-stopped
+
+volumes:
+  kafka_data:
+    driver: local
+
+networks:
+  microservices-network:
+    driver: bridge
