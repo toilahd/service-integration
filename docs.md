@@ -59,21 +59,21 @@ Trong giao tiếp bất đồng bộ, client gửi yêu cầu (thường là m�
 ![alt text](https://grpc.io/img/landing-2.svg)
 
 
-2. Client stub
+1. Client stub
 
 Client sử dụng **stub được sinh ra tự động** (proxy) - gọi RPC như gọi hàm bình thường. Stub sẽ:
 - Serialize request sang Protobuf
 - Gửi qua HTTP/2
 - Nhận và deserialize response từ server
 
-3. Server implementation
+2. Server implementation
 
 Server nhận **interface** sinh ra từ .proto, và lập trình viên chỉ cần làm logic xử lý. Server sẽ:
 - Nhận và giải mã request
 - Gọi hàm xử lý tương ứng
 - Trả lại response dạng Protobuf
 
-4. Tầng truyền tải (Transport layer)
+3. Tầng truyền tải (Transport layer)
 
 gRPC dùng HTTP/2, giúp:
 - Multiplexing nhiều luồng trên 1 kết nối
@@ -83,20 +83,12 @@ gRPC dùng HTTP/2, giúp:
 
 Đây là lý do gRPC nhanh hơn REST/JSON trên HTTP/1.1.
 
-5. Cơ chế serialize/deserialize
+4. Cơ chế serialize/deserialize
 
 Dữ liệu (nhị phân) được mã hoá bằng Protocol Buffers, mang lại lợi ích:
 - Nhỏ gọn
 - Tốc độ cao
 - Có kiểm soát schema và hỗ trợ versioning
-
-6. Các mô hình giao tiếp
-
-gRPC hỗ trợ 4 kiểu:
-- Unary RPC – 1 request <-> 1 response
-- Server streaming – 1 request -> stream response
-- Client streaming – stream request -> 1 response
-- Bidirectional streaming – hai bên gửi stream song song
 
 Luồng hoạt động tổng quát:
 - Client gọi hàm stub -> tạo request Protobuf
@@ -151,6 +143,8 @@ gRPC hỗ trợ 4 kiểu:
 - Server streaming – 1 request -> stream response
 - Client streaming – stream request -> 1 response
 - Bidirectional streaming – hai bên gửi stream song song
+
+[Animation](https://claude.ai/public/artifacts/9b2f38c5-8895-4f20-a828-2eb168e39ac8)
 
 ### 2.5 Advantages of gRPC
 
