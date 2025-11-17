@@ -242,6 +242,8 @@ So với REST truyền thống, gRPC có nhiều ưu điểm nổi bật:
 
 ## Part 3 - Message Broker (Asynchronous Communication)
 
+![alt text](https://tinasoft.io/wp-content/uploads/2024/02/message-broker-.png)
+
 ---
 
 ### 3.1 What is a Message Broker?
@@ -262,7 +264,7 @@ Message Broker là phần mềm trung gian giúp các ứng dụng giao tiếp v
 ---
 
 ## Part 4 - RabbitMQ
-
+![alt text](https://images.viblo.asia/a1571d98-cb4e-4f3a-9757-117a492be32c.png)
 ---
 
 ### 4.1 Overview
@@ -301,6 +303,8 @@ RabbitMQ có 4 loại exchange chính để định tuyến tin nhắn:
 ---
 
 ## Part 5 - Apache Kafka
+
+![alt text](https://substackcdn.com/image/fetch/$s_!9-Rh!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F4d113105-4f2f-4edb-8bcf-05af32969603_1688x1082.png)
 
 ---
 
@@ -421,6 +425,8 @@ Một cụm Kafka gồm nhiều broker (mỗi broker là một Kafka server). C�
 
 ## Part 8 - When to Use Each Technology
 
+![alt text](https://i.pinimg.com/736x/41/f9/53/41f953812ea107364ced81ed25045688.jpg)
+
 ---
 
 ### 8.1 Use gRPC when
@@ -466,13 +472,15 @@ Không phù hợp nếu workload nhẹ, cần routing phức tạp, hoặc cần
 
 ## Part 9 - Hybrid Architectures
 
+![alt text](https://preview.redd.it/microservicehell-v0-3egcoxweiivd1.jpeg?width=640&crop=smart&auto=webp&s=3e0ede335f0e85cef8cb6681bff1e2321cfc1bbd)
+
 ---
 
 ### 9.1 Combining approaches
 
-- Hệ thống thực tế thường cần kết hợp cả synchronous (gRPC) và asynchronous (RabbitMQ/Kafka) để tận dụng ưu điểm của mỗi mô hình.
-- gRPC dùng cho các request cần phản hồi ngay: validation, tính toán giá trị, CRUD nội bộ, kiểm tra trạng thái.
-- Message broker dùng cho các tác vụ không cần kết quả tức thời: gửi email, cập nhật kho, đồng bộ dữ liệu, indexing, logging, analytics.
+- Hệ thống thực tế thường cần kết hợp cả synchronous và asynchronous để tận dụng ưu điểm.
+- gRPC dùng cho các request cần phản hồi ngay.
+- Message broker dùng cho các tác vụ không cần kết quả tức thời.
 - Một pattern phổ biến: service xử lý request qua gRPC → publish sự kiện sang broker để các service khác xử lý tiếp (OrderCreated, PaymentCompleted, UserSignedUp...).
 - gRPC stream có thể kết hợp với Kafka stream: gRPC để nhận dữ liệu real-time từ client/device, Kafka xử lý nền với throughput lớn.
 - Hybrid architecture giúp vừa giữ được độ trễ thấp cho các thao tác quan trọng, vừa đảm bảo hệ thống mở rộng tốt và không bị coupling chặt giữa các service.
@@ -481,15 +489,14 @@ Không phù hợp nếu workload nhẹ, cần routing phức tạp, hoặc cần
 
 ### 9.2 Design guidelines
 
-- Dùng gRPC cho critical path: các thao tác cần kết quả ngay, latency thấp, logic ngắn.
-- Dùng RabbitMQ/Kafka cho side-effects và long-running tasks: gửi thông báo, xử lý nền, pipeline, batch, event propagation.
-- Không dùng gRPC cho workflow dài hoặc fan-out nhiều service → dễ nghẽn và khó retry.
-- Không dùng Kafka hoặc RabbitMQ như RPC: không phù hợp cho request–response, latency cao, phức tạp không cần thiết.
+- Dùng gRPC cho critical path.
+- Dùng RabbitMQ/Kafka cho side-effects và long-running tasks.
+- Không dùng gRPC cho workflow dài hoặc fan-out nhiều service.
+- Không dùng Kafka hoặc RabbitMQ như RPC.
 - Phân tách rõ vai trò:
     - gRPC → command/query, synchronous calls
     - RabbitMQ → job queue, retries, routing
     - Kafka → event stream, audit log, event sourcing, analytics
-- Thiết kế theo hướng eventual consistency: synchronous xử lý phần quan trọng, asynchronous xử lý phần còn lại.
 - Triển khai logging, tracing, monitoring cho cả RPC lẫn message flow → đảm bảo quan sát toàn hệ thống.
 
 
