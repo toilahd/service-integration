@@ -57,7 +57,7 @@ export async function initializeTopics() {
   }
 }
 
-// Export a helper to create producers with legacy partitioner (optional)
+// Export a helper to create producers 
 export function createProducer() {
   return kafka.producer({
     allowAutoTopicCreation: true,

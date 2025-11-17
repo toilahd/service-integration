@@ -1,7 +1,4 @@
 # Service Integration
-
-This repository contains notes, demos and exercises about service integration patterns, including synchronous and asynchronous communication, gRPC, RabbitMQ, and Kafka.
-
 ## Table of Contents
 
 - [Part 1 — Overview](#part-1---overview)
@@ -14,7 +11,6 @@ This repository contains notes, demos and exercises about service integration pa
 - [Part 8 — When to Use Each Technology](#part-8---when-to-use-each-technology)
 - [Part 9 — Hybrid Architectures](#part-9---hybrid-architectures)
 - [Part 10 — Demos & Hands-on](#part-10---demos--hands-on)
-- [Exercises (Suggested)](#exercises-suggested)
 - [References](#references)
 - [Discussion Questions](#discussion-questions)
 
@@ -22,15 +18,24 @@ This repository contains notes, demos and exercises about service integration pa
 ## Part 1 - Overview
 
 ### 1.1 What is Service Integration?
+Service Integration (Tích hợp dịch vụ) là quá trình kết nối nhiều thiết bị, ứng dụng và hệ thống riêng lẻ lại thành một hệ thống lớn, đồng bộ và thống nhất. Mục tiêu là cho phép các thành phần khác nhau (thường được xây dựng bằng các công nghệ khác nhau) có thể chia sẻ dữ liệu và tự động hóa các quy trình nghiệp vụ. Điều này rất quan trọng trong các kiến trúc microservices, service-oriented architecture (SOA) và các hệ thống dựa trên đám mây (cloud-based systems).
 
-> TODO: Add content describing service integration concepts and goals.
+
 
 ### 1.2 Integration Approaches
 
 - Synchronous communication
+Trong giao tiếp đồng bộ, service gửi yêu cầu (client) sẽ phải chờ service nhận (server) xử lý và trả về phản hồi. Client bị khóa (blocked) trong suốt thời gian chờ đợi.
+  - Ví dụ: gRPC, REST API.
+  - Đặc điểm: Có sự ràng buộc về thời gian, phản hồi ngay lập tức.
+  - Phù hợp khi: Client cần kết quả ngay để tiếp tục công việc.
 - Asynchronous communication
+Trong giao tiếp bất đồng bộ, client gửi yêu cầu (thường là một "tin nhắn" - message) và không cần chờ phản hồi. Client có thể tiếp tục công việc khác ngay lập tức.
 
-> TODO: Add descriptions and examples for each approach.
+  - Ví dụ: Message Broker (RabbitMQ, Kafka).
+  - Đặc điểm: Giảm sự ràng buộc (decoupling), tăng khả năng phục hồi lỗi.
+  - Phù hợp khi: Xử lý tác vụ nền, không cần kết quả ngay, cần độ tin cậy cao.
+
 
 
 ## Part 2 - gRPC (Synchronous Communication)
@@ -48,7 +53,7 @@ This repository contains notes, demos and exercises about service integration pa
     - Real-time communication: hỗ trợ server streaming, client streaming và bidirectional streaming.
     - Giao tiếp mobile <-> backend: hiệu quả cho mạng băng thông thấp/không ổn định.
     - Các hệ thống IoT: thông điệp giao tiếp nhẹ và hiệu quả.
-> TODO: Add definition and use-cases.
+
 
 ### 2.2 gRPC architecture
 ![alt text](https://grpc.io/img/landing-2.svg)
@@ -101,8 +106,6 @@ Luồng hoạt động tổng quát:
 - Server trả response dạng Protobuf
 - Stub giải mã và trả kết quả cho client
 
-> TODO: Add architecture details.
-
 ### 2.3 Protocol Buffers (Định nghĩa dịch vụ - Protobuf)
 
 Mô hình client-server, hợp đồng giao tiếp được viết bằng Protocol Buffers (Protobuf).
@@ -141,8 +144,6 @@ message HelloReply {
 }
 ```
 
-> TODO: Add notes about .proto files and message definitions.
-
 ### 2.4 gRPC call types (Các mô hình giao tiếp)
 
 gRPC hỗ trợ 4 kiểu:
@@ -150,9 +151,6 @@ gRPC hỗ trợ 4 kiểu:
 - Server streaming – 1 request -> stream response
 - Client streaming – stream request -> 1 response
 - Bidirectional streaming – hai bên gửi stream song song
-
-> TODO: Expand with examples and diagrams.
-> TODO: giải thích multiplexing, HTTP/2 vs HTTP/1.1, cần cụ thể các mô hình giao tiếp
 
 ### 2.5 Advantages of gRPC
 
@@ -181,7 +179,7 @@ So với REST truyền thống, gRPC có nhiều ưu điểm nổi bật:
 - Tối ưu để các service nội bộ giao tiếp nhanh, ổn định.
 - Ít tốn băng thông, dễ load balancing.
 
-> TODO
+
 
 ### 2.6 Limitations of gRPC
 1. Không thân thiện với trình duyệt
@@ -207,53 +205,43 @@ So với REST truyền thống, gRPC có nhiều ưu điểm nổi bật:
 6. Learning curve cao
 - Protobuf, toolchain, generator, streaming model.
 
-> TODO
-
 
 ## Part 3 - Message Broker (Asynchronous Communication)
 
 ### 3.1 What is a Message Broker?
 
-> TODO
+Message Broker là phần mềm trung gian giúp các ứng dụng giao tiếp và trao đổi thông tin, kể cả khi chúng chạy trên nền tảng hay ngôn ngữ khác nhau. Broker nhận tin nhắn từ producer, lưu trữ tạm (thông qua hàng đợi) và chuyển tiếp đến consumer theo quy tắc định trước. Nhờ broker, các dịch vụ decouple (giảm phụ thuộc trực tiếp): producer không cần biết chi tiết consumer và ngược lại. Hầu hết các message broker cung cấp cơ chế ghi đệm và xác nhận (acknowledgment) để đảm bảo tin nhắn không bị mất
+. Phổ biến nhất có RabbitMQ (AMQP), Kafka, MQTT, AWS SQS, Azure Service Bus…
 
 ### 3.2 Core concepts
-
-- Producer
-- Consumer
-- Queue
-- Topic
-- Exchange
-- Partition
-
-> TODO: Define and illustrate each concept.
-
+- Producer: Là thành phần tạo và gửi tin nhắn vào hệ thống. Trong microservices, một service có thể hành động như producer khi phát sinh event hay tác vụ cần xử lý.
+- Consumer: Là thành phần nhận và xử lý tin nhắn từ broker. Service consumer sẽ lấy tin nhắn từ hàng đợi hoặc chủ đề để thực thi logic tương ứng.
+- Queue: Là cấu trúc lưu trữ tuần tự tin nhắn theo mô hình point-to-point. Mỗi tin nhắn trong hàng đợi chỉ được giao cho một consumer (1 → 1).
+- Topic: Mô hình phân phối 1 → N. Tin nhắn được publish lên một topic và được phân phối đến nhiều consumer đăng ký. Thường áp dụng trong pub/sub (publish-subscribe).
+- Exchange (RabbitMQ): Là thành phần nhận tin từ producer và quyết định gửi vào hàng đợi nào dựa trên kiểu routing. Ví dụ fanout (phát broadcast đến mọi queue), direct (so khớp routing key chính xác) hay topic (khớp pattern chuỗi).
+- Partition (Kafka): Trong Kafka, một topic được chia thành nhiều partition, mỗi partition là một log liên tục. Tin nhắn ghi thêm vào cuối partition và chỉ đảm bảo thứ tự nội bộ trong mỗi partition. Việc phân vùng cho phép xử lý song song và scale (các partition phân bổ qua nhiều broker).
 
 ## Part 4 - RabbitMQ
 
 ### 4.1 Overview
 
-> TODO
+RabbitMQ là một message broker phổ biến mã nguồn mở, thực thi chuẩn AMQP. RabbitMQ hỗ trợ nhiều tính năng routing linh hoạt và quản lý kết nối tin cậy, thích hợp cho kiến trúc microservices và xử lý các tác vụ bất đồng bộ. Nói cách khác, RabbitMQ giống “hệ thống bưu điện” cho ứng dụng: producer gửi tin nhắn vào exchange, Exchange chuyển tin vào hàng đợi (queue), và các consumer kéo tin từ đó. Nhờ vào mô hình này, RabbitMQ giúp giảm tải cho hệ thống (producer và consumer hoạt động riêng biệt) và đảm bảo tin nhắn được lưu vững, nhờ cơ chế confirm và retry nếu cần.
 
 ### 4.2 RabbitMQ architecture
 
 #### Exchange types
+RabbitMQ có 4 loại exchange chính để định tuyến tin nhắn:
 
-- direct
-- fanout
-- topic
-- headers
-
-> TODO: Add routing examples.
+- Direct Exchange: Gửi tin nhắn đến các queue mà khóa định tuyến (routing key) khớp chính xác với binding key của queue đó. Nếu không có queue nào bind với key đó, tin nhắn sẽ bị bỏ.
+- Fanout Exchange: Phát broadcast tin nhắn tới tất cả các queue được nối với exchange, bỏ qua routing key. Dùng cho mô hình Publish/Subscribe cơ bản (tất cả listener nhận tin).
+- Topic Exchange: Sử dụng pattern trên routing key (chuỗi chia bởi dấu chấm). Hỗ trợ wildcard * (một từ) và # (nhiều từ) khi bind queue. Tin nhắn được chuyển tới queue có binding key khớp với routing key theo pattern. Thích hợp để filter và phân loại message theo chủ đề.
+- Headers Exchange: Không xét routing key, mà so sánh các cặp header trong tin nhắn với tiêu chí bind. Chỉ những message có thuộc tính header phù hợp mới được gửi tới queue (không dùng routing key).
 
 ### 4.3 Messaging patterns with RabbitMQ
-
-- Work queue
-- Publish/Subscribe
-- Routing
-- RPC
-
-> TODO
-
+- Work Queue (Task Queue): Producer gửi các công việc (jobs) vào một queue. Một hoặc nhiều worker (consumer) sẽ kéo job và xử lý. RabbitMQ phân phối các job cho nhiều worker, giúp xử lý song song. Ví dụ, web server nhận yêu cầu gửi email, sẽ đẩy tin vào queue và các worker riêng biệt lấy tin xử lý việc gửi mail.
+- Publish/Subscribe: Producer publish tin tới một exchange kiểu fanout. Exchange gửi bản sao tin đến mọi queue đăng ký với nó. Mỗi queue có thể có một hoặc nhiều consumer, phục vụ cho việc broadcast cập nhật (ví dụ gửi thông báo đến nhiều hệ thống).
+- Routing: Sử dụng direct hoặc topic exchange để gửi tin cho nhóm người nhận cụ thể. Ví dụ, Exchange có thể gửi đến queue “errors” hoặc “warnings” dựa trên khóa định tuyến, hoặc sử dụng topic pattern cho các loại thông điệp phức tạp hơn.
+- RPC (Remote Procedure Call): RabbitMQ cũng mô phỏng kiểu RPC: client gửi tin đợi trả lời, server (worker) xử lý và gửi trả kết quả trở lại một queue reply-to. Mặc dù dùng cơ chế message, nhưng mô hình này sử dụng queue reply nhận phản hồi tương tự gọi hàm đồng bộ.
 ### 4.4 Pros and cons
 
 > TODO
@@ -262,38 +250,39 @@ So với REST truyền thống, gRPC có nhiều ưu điểm nổi bật:
 ## Part 5 - Apache Kafka
 
 ### 5.1 Overview
-
-> TODO
-
+Apache Kafka là nền tảng streaming mã nguồn mở, được thiết kế cho throughput cao và độ trễ thấp khi xử lý luồng dữ liệu thời gian thực. Kafka hoạt động như một hệ thống log bất biến (commit log) – mọi tin nhắn được ghi nối thêm vào cuối log topic và lưu trữ lâu dài. Mỗi topic tương đương một log lưu các sự kiện (event) liên quan, có thể được nhiều ứng dụng đăng ký để xử lý (publish/subscribe). Kafka phân phối dữ liệu qua nhiều máy chủ (brokers) trong cụm, sao chép dữ liệu để chịu lỗi và cho phép consumer theo dõi vị trí (offset) của mình trong log. Nhờ thiết kế này, Kafka thích hợp cho các pipeline dữ liệu lớn (big data), luồng sự kiện (streaming) và ghi nhận lịch sử sự kiện (event sourcing).
 ### 5.2 Kafka architecture
-
-Core components:
-
-- Producer
-- Consumer
-- Topic
-- Partition
-- Broker
-- ZooKeeper / KRaft
-
-> TODO: Add diagrams and behavior details.
+![alt text](https://kafka.apache.org/11/images/streams-architecture-overview.jpg)
+Một cụm Kafka gồm nhiều broker (mỗi broker là một Kafka server). Các broker phối hợp với nhau để lưu trữ và phân phối dữ liệu trong cluster. Có một broker chủ (Controller) chịu trách nhiệm quản lý phân vùng (partition) và thực thi các nhiệm vụ hành chính (vd: phân phối lại phân vùng khi broker hỏng). Mỗi topic trong Kafka được chia thành nhiều partition: mỗi partition là một log riêng biệt, ghi thêm tin nhắn theo thứ tự append-only. Các phân vùng của một topic được phân bổ qua các broker, cho phép xử lý song song (thêm broker sẽ gia tăng khả năng xử lý) và đảm bảo tính chịu lỗi bằng cách nhân bản (replication) sang các broker khác.
+- Producer: Ứng dụng tạo (publish) sự kiện xuống Kafka topic. Producer sẽ quyết định gửi tin vào partition nào (theo round-robin hoặc key). Tin nhắn được gán offset (mỗi message trong partition có offset tăng dần) để consumer truy xuất theo vị trí.
+- Consumer và Consumer Group: Ứng dụng đọc (subscribe) từ Kafka. Consumers nhóm lại thành consumer groups; mỗi partition trong một topic chỉ được giao cho một consumer trong nhóm cùng lúc. Nhờ đó, Kafka có thể mở rộng theo số consumer ngang bằng với số partition. Mỗi consumer ghi nhớ offset cuối cùng đã đọc, nên có thể dừng/bật lại mà không mất dữ liệu. Nếu consumer hỏng, các thành viên khác trong group sẽ tự động nhận lại phân vùng đó.
+- ZooKeeper/KRaft: Trước đây Kafka dùng ZooKeeper để lưu metadata (quorum); hiện nay đang dần chuyển sang cơ chế nội bộ KRaft (Kafka Raft) để giảm phụ thuộc.
 
 ### 5.3 Topics & partitions
-
-> TODO  
+- Topic: Là kênh chứa tin nhắn được phân loại. Mỗi topic tương tự folder/chuyên mục dữ liệu. Producer ghi tin vào topic; nhiều consumer có thể đăng ký cùng topic để đọc tin (pub/sub).
+- Partition: Mỗi topic bị chia ra nhiều partition; mỗi partition là một file log rời, tin nhắn ghi nối ở cuối và luôn đảm bảo thứ tự trong partition đó. Tin nhắn có cùng key (vd: ID người dùng) sẽ luôn được gửi vào cùng một partition, đảm bảo thứ tự cho cùng key. Các partition giúp Kafka xử lý cao tải song song: mỗi partition có thể được đặt lên một broker khác nhau và replicated để chịu lỗi. Vì thế, Kafka chỉ đảm bảo thứ tự cục bộ trong mỗi partition, không đảm bảo thứ tự tuyệt đối trên toàn topic.
 
 ### 5.4 Consumer groups
-
-> TODO
+- Consumer group là cơ chế cho phép nhiều consumer chia sẻ và đồng bộ xử lý dữ liệu của một topic. Các consumer trong cùng group sẽ được Kafka tự động phân phối phân vùng cho nhau (mỗi phân vùng được giao cho đúng một consumer). Nếu một consumer mất kết nối, các consumer khác trong nhóm sẽ nhận nhiệm vụ đọc phân vùng đó (đảm bảo tính sẵn sàng). 
+- Group còn giúp Kafka theo dõi offset của từng nhóm, cho phép tái khởi động hoặc replay dữ liệu từ vị trí đã lưu. Nhờ consumer groups, Kafka đạt được xử lý song song quy mô lớn: càng nhiều consumer trong group, throughput càng cao miễn là số phân vùng đủ cho từng consumer.
 
 ### 5.5 Message retention
+- Khác với đa số message broker, Kafka giữ lại tin nhắn trong log dài hạn theo chính sách cài đặt (ví dụ theo thời gian hoặc dung lượng). Mặc định, Kafka giữ tin trong 7 ngày (cấu hình log.retention.hours=168), hoặc có thể thay đổi cho từng topic. Sau khi hết hạn (ví dụ quá 7 ngày), các tin cũ sẽ bị xóa để giải phóng đĩa. Việc này cho phép replay dữ liệu: các consumer mới hoặc bị lỗi có thể đọc lại toàn bộ tin nhắn cũ. Ngược lại, các broker truyền thống (như RabbitMQ) thường xóa tin ngay khi đã giao. Việc giữ tin lâu dài giúp Kafka như một hệ thống lưu trữ log phân tán, cho phép audit hoặc xử lý lại luồng dữ liệu nếu cần.
 
-> TODO
-
-### 5.6 Pros and 5.7 Cons
-
-> TODO
-
+### 5.6 Pros and Cons
+- Ưu điểm:
+  - Throughput rất cao: Kafka có thể xử lý hàng trăm nghìn đến hàng triệu tin nhắn mỗi giây bằng cách dùng I/O tuần tự và phân vùng dữ liệu.
+  - Độ trễ thấp: Thiết kế tối ưu cho truyền dữ liệu với batching và zero-copy, nên cho độ trễ luôn ở mức thấp (đôi khi chỉ vài ms) dù lưu trữ lâu dài.
+  - Bền vững và phân tán: Mọi tin nhắn được ghi vào đĩa và sao chép trên nhiều broker, đảm bảo chịu lỗi cao. Nếu broker hỏng, các bản sao trên broker khác vẫn đảm bảo dữ liệu không mất mát.
+  - Khả năng scale (mở rộng): Thêm broker và phân vùng mới vào cluster giúp tăng cả lưu trữ và throughput. Kiến trúc phân tán cho phép Kafka mở rộng theo chiều ngang dễ dàng hơn hầu hết message broker truyền thống
+  - Persistent (luôn lưu tin nhắn): Tin nhắn trên Kafka luôn được ghi vào log, do đó có thể truy vấn lại lịch sử (điều này rất hữu ích cho phân tích, báo cáo hoặc tái xử lý sự kiện)
+  - Consumer Groups: Khả năng hỗ trợ nhiều ứng dụng đọc đồng thời mà không làm gián đoạn nhau, dễ dàng tách thành nhiều stream xử lý khác nhau.
+- Nhước điểm:
+  - Phức tạp: Kafka có nhiều thành phần (brokers, controller, cũ là ZooKeeper) nên thiết lập và vận hành không đơn giản. Cần đội ngũ có kinh nghiệm để cấu hình, giám sát và duy trì cluster lớn. Việc chuyển từ ZooKeeper sang KRaft đã giảm phần nào sự phụ thuộc bên ngoài, nhưng vẫn yêu cầu cấu hình cẩn thận.
+  - Độ phức tạp khi xử lý tin bị lỗi: Kafka không cung cấp sẵn cơ chế retry/message queue cho tin lỗi. Nếu consumer xử lý tin thất bại, ta phải tự quản lý offset hoặc tạo topic “retry”/“DLQ” riêng. RabbitMQ có sẵn dead-letter exchange để xử lý retry dễ dàng hơn.
+  - Giới hạn kích thước tin: Mặc định Kafka giới hạn kích thước tin vào ~1MB, nên các thông điệp lớn phải chia nhỏ. Điều này có thể gây thêm độ trễ và phức tạp.
+  - Đảm bảo thứ tự: Kafka chỉ đảm bảo thứ tự bên trong mỗi partition. Nếu một topic có nhiều partition, thứ tự giữa các partition không được đảm bảo. Hơn nữa, khi retry xử lý tin trong partition đang đọc, consumer không thể bỏ qua tin lỗi mà phải xử lý tuần tự, nếu không sẽ mất thứ tự.
+  - Cần thời gian để ổn định: Vì giữ lại tin lâu dài nên cluster Kafka yêu cầu ổn định cao (như đĩa cứng đủ lớn). Kafka thích hợp với trường hợp cần lịch sử hoặc luồng dữ liệu lớn. Nếu chỉ cần truyền tin tức thời và xử lý xong là xóa, thì có thể dùng RabbitMQ (tác vụ) cho đơn giản hơn.
 
 ## Part 6 - gRPC vs Message Broker
 
@@ -319,24 +308,20 @@ Core components:
 | **Typical use cases**   | Microservices nội bộ, low-latency RPC, streaming real-time.                                | Event-driven architecture, async workflows, event sourcing, log processing.                        |
 
 
-> TODO: Fill comparison table and trade-offs.
-
 
 ## Part 7 - RabbitMQ vs Kafka
 
-Compare on:
-
-- Model
-- Delivery mechanism
-- Throughput
-- Latency
-- Retention
-- Ordering
-- Use cases
-- Complexity
-- Replay capability
-
-> TODO: Fill comparison table and recommendations.
+| **Tiêu chí** | **RabbitMQ** | **Kafka** |
+|--------------|--------------|-----------|
+| **Model** | Message Broker truyền thống (AMQP), tập trung vào routing, queue, exchange | Distributed Commit Log, Event Streaming Platform, tối ưu throughput và lưu trữ dài hạn |
+| **Delivery mechanism** | **Push–Ack**: broker đẩy tin xuống consumer; consumer ack thì tin bị xóa | **Pull–Retain**: consumer tự kéo tin theo offset; tin giữ lại theo retention, không xóa |
+| **Throughput** | Vài **chục nghìn msg/s** | **Hàng trăm nghìn → hàng triệu msg/s** |
+| **Latency** | Thấp khi không backlog; tăng khi tải cao | Thấp và ổn định nhờ batching; có thể tăng do polling |
+| **Retention** | Xóa tin ngay sau khi consumer ack | Giữ tin theo thời gian cấu hình (days, weeks…) |
+| **Ordering** | Đảm bảo thứ tự **chỉ khi có 1 consumer**; nhiều consumer mất thứ tự | Đảm bảo thứ tự **trong 1 partition**; nhiều partition không giữ thứ tự toàn cục |
+| **Use cases** | Work queue, task processing, RPC, routing fanout/topic/direct | Event streaming, log processing, analytics, event sourcing, high-throughput pub/sub |
+| **Complexity** | Dễ cài, dễ dùng; clustering phức tạp | Phức tạp hơn: cluster + partition + replication |
+| **Replay capability** | Không hỗ trợ replay | Replay bằng offset (cực mạnh) |
 
 
 ## Part 8 - When to Use Each Technology
@@ -409,59 +394,7 @@ Không phù hợp nếu workload nhẹ, cần routing phức tạp, hoặc cần
 
 ### 10.1 Demo 1: gRPC Service
 
-> TODO: Add instructions, code samples and how to run.
-
-### 10.2 Demo 2: RabbitMQ Integration
-
-> TODO
-
-### 10.3 Demo 3: Kafka Event Streaming
-
-> TODO
-
-
-## Exercises (Suggested)
-
-### Exercise 1 — Implement gRPC Product Service
-
-Requirements:
-
-- Create a Product Service with gRPC API
-- Implement CRUD operations
-- Provide a client to test the operations
-
-> TODO: Add starter code / hints.
-
-### Exercise 2 — RabbitMQ Task Queue
-
-Requirements:
-
-- Build a notification system using RabbitMQ
-- Multiple workers for email/SMS
-- Retry mechanism
-
-> TODO: Add starter code / hints.
-
-### Exercise 3 — Kafka Event Pipeline
-
-Requirements:
-
-- Event-driven order processing
-- Producer: Order Service
-- Consumers: Payment, Inventory, Notification
-- Support event replay
-
-> TODO: Add starter code / hints.
-
-### Exercise 4 — Hybrid Architecture
-
-Requirements:
-
-- Design an e-commerce system using both gRPC and a message broker
-- Explain choices
-
-> TODO: Add guidelines and example architecture.
-
+### 10.2 Demo 3: Kafka Event Streaming
 
 ## References
 
