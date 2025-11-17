@@ -24,12 +24,15 @@ Service Integration (Tích hợp dịch vụ) là quá trình kết nối nhiề
 
 ### 1.2 Integration Approaches
 
-- Synchronous communication
+**Synchronous communication**
+
 Trong giao tiếp đồng bộ, service gửi yêu cầu (client) sẽ phải chờ service nhận (server) xử lý và trả về phản hồi. Client bị khóa (blocked) trong suốt thời gian chờ đợi.
   - Ví dụ: gRPC, REST API.
   - Đặc điểm: Có sự ràng buộc về thời gian, phản hồi ngay lập tức.
   - Phù hợp khi: Client cần kết quả ngay để tiếp tục công việc.
-- Asynchronous communication
+
+**Asynchronous communication**
+
 Trong giao tiếp bất đồng bộ, client gửi yêu cầu (thường là một "tin nhắn" - message) và không cần chờ phản hồi. Client có thể tiếp tục công việc khác ngay lập tức.
 
   - Ví dụ: Message Broker (RabbitMQ, Kafka).
@@ -330,7 +333,6 @@ Chọn gRPC khi bạn cần:
 - Kiến trúc đơn giản, không cần cơ chế queue, retry hoặc persistence phức tạp.
 - Hệ thống yêu cầu API chặt chẽ, rõ ràng, dễ versioning.
 Không phù hợp nếu cần decoupling mạnh hoặc xử lý offline.
-> TODO
 
 ### 8.2 Use RabbitMQ when
 Chọn RabbitMQ khi:
@@ -343,7 +345,6 @@ Chọn RabbitMQ khi:
 - Hệ thống không cần throughput cực lớn nhưng cần đảm bảo xử lý đúng.
 
 Không phù hợp nếu xử lý dữ liệu lớn theo dòng sự kiện hoặc log streaming.
-> TODO
 
 ### 8.3 Use Kafka when
 Chọn Kafka khi:
@@ -354,7 +355,6 @@ Chọn Kafka khi:
 - Cần đảm bảo ordering theo partition hoặc exactly-once semantics.
 - Workflow thiên về data streaming, analytics, log collection, real-time pipeline.
 Không phù hợp nếu workload nhẹ, cần routing phức tạp, hoặc cần queue semantics kiểu FIFO đơn giản.
-> TODO
 
 
 ## Part 9 - Hybrid Architectures
@@ -367,7 +367,6 @@ Không phù hợp nếu workload nhẹ, cần routing phức tạp, hoặc cần
 - Một pattern phổ biến: service xử lý request qua gRPC → publish sự kiện sang broker để các service khác xử lý tiếp (OrderCreated, PaymentCompleted, UserSignedUp...).
 - gRPC stream có thể kết hợp với Kafka stream: gRPC để nhận dữ liệu real-time từ client/device, Kafka xử lý nền với throughput lớn.
 - Hybrid architecture giúp vừa giữ được độ trễ thấp cho các thao tác quan trọng, vừa đảm bảo hệ thống mở rộng tốt và không bị coupling chặt giữa các service.
-> TODO
 
 ### 9.2 Design guidelines
 
@@ -381,7 +380,6 @@ Không phù hợp nếu workload nhẹ, cần routing phức tạp, hoặc cần
     - Kafka → event stream, audit log, event sourcing, analytics
 - Thiết kế theo hướng eventual consistency: synchronous xử lý phần quan trọng, asynchronous xử lý phần còn lại.
 - Triển khai logging, tracing, monitoring cho cả RPC lẫn message flow → đảm bảo quan sát toàn hệ thống.
-> TODO
 
 
 ## Part 10 - Demos & Hands-on
@@ -408,5 +406,3 @@ Không phù hợp nếu workload nhẹ, cần routing phức tạp, hoặc cần
 3. Can Kafka completely replace RabbitMQ? Why/why not?
 4. Is gRPC suitable for client-to-server communication?
 5. How to handle failures in asynchronous communication?
-
-> TODO: Add suggested answers / talking points.
