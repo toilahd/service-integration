@@ -237,8 +237,8 @@ RabbitMQ có 4 loại exchange chính để định tuyến tin nhắn:
 - Routing: Sử dụng direct hoặc topic exchange để gửi tin cho nhóm người nhận cụ thể. Ví dụ, Exchange có thể gửi đến queue “errors” hoặc “warnings” dựa trên khóa định tuyến, hoặc sử dụng topic pattern cho các loại thông điệp phức tạp hơn.
 - RPC (Remote Procedure Call): RabbitMQ cũng mô phỏng kiểu RPC: client gửi tin đợi trả lời, server (worker) xử lý và gửi trả kết quả trở lại một queue reply-to. Mặc dù dùng cơ chế message, nhưng mô hình này sử dụng queue reply nhận phản hồi tương tự gọi hàm đồng bộ.
 ### 4.4 Pros and cons
-
-> TODO
+- Ưu điểm: RabbitMQ rất linh hoạt trong routing và phân phối tin nhắn, hỗ trợ đa mô hình (work queue, pub/sub, routing). Nó có cộng đồng lớn và hỗ trợ nhiều ngôn ngữ, dễ tích hợp vào các ứng dụng hiện tại. Hệ thống queue đảm bảo tin nhắn được lưu trữ tạm thời, có thể cấu hình thuộc tính như TTL, ưu tiên, dead-letter queue v.v. Nói chung, RabbitMQ hay được ví như “bưu điện” ứng dụng – dùng để giảm tải và đảm bảo giao nhận tin nhắn kịp thời.
+- Nhược điểm: RabbitMQ không được thiết kế cho throughput cực lớn như Kafka. Khi khối lượng tin nhắn tăng cao, throughput sẽ giảm (khoảng vài chục ngàn tin/s mỗi node) và cần mở rộng cụm qua cluster phức tạp. Sau khi consumer ack, tin sẽ bị xóa (không lưu lâu dài), nên không hỗ trợ dễ dàng replay tin cũ. Việc cấu hình clustering cũng phức tạp, đòi hỏi nhiều tuỳ chỉnh (VD: thiết lập mirror queue, chốt dữ liệu).
 
 
 ## Part 5 - Apache Kafka
