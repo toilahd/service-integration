@@ -9,6 +9,9 @@ service ProductService {
   rpc UpdateProduct(UpdateProductRequest) returns (ProductResponse);
   rpc DeleteProduct(DeleteProductRequest) returns (DeleteResponse);
   rpc ListProducts(ListProductsRequest) returns (ProductListResponse);
+  
+  // Server Streaming RPC - streams products one by one
+  rpc StreamProducts(StreamProductsRequest) returns (stream ProductStreamResponse);
 }
 
 // Product Message
@@ -51,6 +54,10 @@ message ListProductsRequest {
   int32 limit = 2;
 }
 
+message StreamProductsRequest {
+  int32 delay_ms = 1; // Optional delay between streaming each product (for demo purposes)
+}
+
 // Response Messages
 message ProductResponse {
   bool success = 1;
@@ -68,4 +75,10 @@ message ProductListResponse {
 message DeleteResponse {
   bool success = 1;
   string message = 2;
+}
+
+message ProductStreamResponse {
+  Product product = 1;
+  int32 index = 2;
+  int32 total = 3;
 }

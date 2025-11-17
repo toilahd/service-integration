@@ -251,10 +251,61 @@ async function listProducts(call, callback) {
   }
 }
 
+// Implement StreamProducts RPC (Server Streaming)
+async function streamProducts(call) {
+  try {
+    const { delay_ms } = call.request;
+    const delayMs = delay_ms || 500; // Default 500ms delay between each product
+
+    // Fetch all products
+    const { products, total } = await Product.findAll(1, 1000); // Get up to 1000 products
+
+    console.log(`📡 Starting to stream ${total} products with ${delayMs}ms delay...`);
+
+    // Stream each product one by one
+    for (let i = 0; i < products.length; i++) {
+      const product = products[i];
+      
+      // Write product to stream
+      call.write({
+        product: {
+          id: product.id,
+          name: product.name,
+          description: product.description,
+          price: product.price,
+          stock: product.stock,
+          created_at: product.created_at.toISOString(),
+          updated_at: product.updated_at.toISOString()
+        },
+        index: i + 1,
+        total: total
+      });
+
+      console.log(`  ✓ Streamed product ${i + 1}/${total}: ${product.name}`);
+
+      // Add delay between streams (except for the last one)
+      if (i < products.length - 1) {
+        await new Promise(resolve => setTimeout(resolve, delayMs));
+      }
+    }
+
+    // End the stream
+    call.end();
+    console.log(`✅ Finished streaming ${total} products`);
+  } catch (error) {
+    console.error('Error streaming products:', error);
+    call.emit('error', {
+      code: grpc.status.INTERNAL,
+      message: 'Internal server error while streaming'
+    });
+  }
+}
+
 module.exports = {
   createProduct,
   getProduct,
   updateProduct,
   deleteProduct,
-  listProducts
+  listProducts,
+  streamProducts
 };

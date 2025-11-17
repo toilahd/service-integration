@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>gRPC Server Streaming Demo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .controls {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .control-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+        input[type="number"] {
+            width: 200px;
+            padding: 8px 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        button {
+            padding: 10px 30px;
+            font-size: 16px;
+            margin-right: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        #startBtn {
+            background: #667eea;
+            color: white;
+        }
+        #startBtn:hover:not(:disabled) {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+        #stopBtn {
+            background: #e74c3c;
+            color: white;
+        }
+        #stopBtn:hover:not(:disabled) {
+            background: #c0392b;
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .status {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-weight: 600;
+        }
+        .status.idle {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        .status.streaming {
+            background: #fff3e0;
+            color: #e65100;
+            animation: pulse 2s infinite;
+        }
+        .status.completed {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+        .status.error {
+            background: #ffebee;
+            color: #c62828;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .progress {
+            margin-bottom: 20px;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+        .products {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .product-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            animation: slideIn 0.5s;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .product-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .product-detail {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            color: #666;
+        }
+        .product-label {
+            font-weight: 600;
+        }
+        .product-price {
+            color: #667eea;
+            font-weight: 700;
+            font-size: 20px;
+        }
+        .product-stock {
+            color: #4caf50;
+            font-weight: 600;
+        }
+        .product-description {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+            color: #777;
+            font-size: 14px;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 gRPC Server Streaming Demo</h1>
+        <p class="subtitle">Real-time product streaming from gRPC server</p>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="delayInput">Delay between products (ms):</label>
+                <input type="number" id="delayInput" value="500" min="0" max="5000" step="100">
+            </div>
+            <button id="startBtn" onclick="startStreaming()">▶️ Start Streaming</button>
+            <button id="stopBtn" onclick="stopStreaming()" disabled>⏹️ Stop</button>
+        </div>
+
+        <div id="status" class="status idle">
+            Ready to stream
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value" id="totalCount">0</div>
+                <div class="stat-label">Total Products</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="receivedCount">0</div>
+                <div class="stat-label">Received</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="streamTime">0s</div>
+                <div class="stat-label">Stream Time</div>
+            </div>
+        </div>
+
+        <div class="progress">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill">0%</div>
+            </div>
+        </div>
+
+        <div class="products" id="productsContainer"></div>
+    </div>
+
+    <script>
+        let eventSource = null;
+        let startTime = null;
+        let timerInterval = null;
+
+        function updateStatus(message, type) {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = message;
+            statusEl.className = `status ${type}`;
+        }
+
+        function updateProgress(received, total) {
+            const percentage = total > 0 ? Math.round((received / total) * 100) : 0;
+            const progressFill = document.getElementById('progressFill');
+            progressFill.style.width = percentage + '%';
+            progressFill.textContent = percentage + '%';
+            
+            document.getElementById('totalCount').textContent = total;
+            document.getElementById('receivedCount').textContent = received;
+        }
+
+        function updateTimer() {
+            if (startTime) {
+                const elapsed = Math.round((Date.now() - startTime) / 1000);
+                document.getElementById('streamTime').textContent = elapsed + 's';
+            }
+        }
+
+        function addProduct(product, index, total) {
+            const container = document.getElementById('productsContainer');
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.innerHTML = `
+                <div class="product-name">${product.name}</div>
+                <div class="product-detail">
+                    <span class="product-label">ID:</span>
+                    <span>${product.id}</span>
+                </div>
+                <div class="product-detail">
+                    <span class="product-label">Price:</span>
+                    <span class="product-price">$${product.price}</span>
+                </div>
+                <div class="product-detail">
+                    <span class="product-label">Stock:</span>
+                    <span class="product-stock">${product.stock} units</span>
+                </div>
+                <div class="product-description">${product.description}</div>
+            `;
+            container.appendChild(card);
+            updateProgress(index, total);
+        }
+
+        function startStreaming() {
+            const delay = document.getElementById('delayInput').value;
+            const container = document.getElementById('productsContainer');
+            container.innerHTML = '';
+            
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('stopBtn').disabled = false;
+            
+            updateStatus('🔄 Connecting to stream...', 'streaming');
+            updateProgress(0, 0);
+            
+            startTime = Date.now();
+            timerInterval = setInterval(updateTimer, 1000);
+
+            // Connect to Server-Sent Events endpoint
+            eventSource = new EventSource(`http://localhost:3000/api/products/stream?delay=${delay}`);
+
+            eventSource.onopen = () => {
+                console.log('✅ EventSource connection opened');
+                updateStatus('📡 Streaming started...', 'streaming');
+            };
+
+            eventSource.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    
+                    if (data.done) {
+                        updateStatus('✅ Streaming completed!', 'completed');
+                        stopStreaming();
+                        return;
+                    }
+
+                    if (data.error) {
+                        updateStatus('❌ Error: ' + data.error, 'error');
+                        stopStreaming();
+                        return;
+                    }
+
+                    if (data.product) {
+                        addProduct(data.product, data.index, data.total);
+                        updateStatus(`📡 Streaming... (${data.index}/${data.total})`, 'streaming');
+                    }
+                } catch (e) {
+                    console.error('Error parsing event data:', e, event.data);
+                }
+            };
+
+            eventSource.onerror = (error) => {
+                console.error('EventSource error:', error, 'ReadyState:', eventSource.readyState);
+                
+                if (eventSource.readyState === EventSource.CONNECTING) {
+                    updateStatus('⚠️ Reconnecting...', 'streaming');
+                } else if (eventSource.readyState === EventSource.CLOSED) {
+                    updateStatus('❌ Connection closed. Make sure the server is running.', 'error');
+                    stopStreaming();
+                }
+            };
+        }
+
+        function stopStreaming() {
+            if (eventSource) {
+                eventSource.close();
+                eventSource = null;
+            }
+            
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
+            
+            if (document.getElementById('status').classList.contains('streaming')) {
+                updateStatus('⏹️ Streaming stopped', 'idle');
+            }
+        }
+
+        // Clean up on page unload
+        window.addEventListener('beforeunload', stopStreaming);
+    </script>
+</body>
+</html>

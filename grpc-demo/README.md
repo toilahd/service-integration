@@ -17,8 +17,11 @@ MySQL Database (:3306)
 ## 📋 Features
 
 - ✅ Full CRUD operations (Create, Read, Update, Delete, List)
+- ✅ **Server Streaming RPC** - Real-time product streaming
 - ✅ gRPC server with Protocol Buffers
 - ✅ REST API Gateway for easy frontend integration
+- ✅ Server-Sent Events (SSE) for browser streaming
+- ✅ Interactive web demo for streaming
 - ✅ MySQL database with connection pooling
 - ✅ Interactive test client
 - ✅ Automated test suite
@@ -50,6 +53,7 @@ grpc_demo/
 │   └── testClient.js         # Interactive test client
 ├── gateway/
 │   └── restGateway.js        # REST API for frontend
+│   └── stream-demo.html      # Interactive streaming demo
 ├── models/
 │   └── Product.js            # Product model & queries
 ├── config/
@@ -108,6 +112,11 @@ npm run gateway
 npm run client
 ```
 
+**Browser: View Streaming Demo**
+```
+Open http://localhost:3000/stream-demo
+```
+
 ## 🧪 Testing
 
 ### Interactive Test Client
@@ -124,6 +133,23 @@ Options:
 4. Delete Product
 5. List Products
 6. Run Automated Tests
+7. **Stream Products (Server Streaming Demo)**
+8. **Run Streaming Test**
+
+### Server Streaming Demo
+
+**Option 7** demonstrates gRPC server streaming where products are sent one by one from the server to the client in real-time. You can set a custom delay between each product.
+
+**Option 8** runs an automated test of the streaming functionality with a 300ms delay.
+
+### Web-Based Streaming Demo
+
+Open `http://localhost:3000/stream-demo` in your browser to see an interactive demo of server streaming with:
+- Real-time product cards appearing as they're streamed
+- Progress bar showing streaming progress
+- Statistics (total products, received count, stream time)
+- Adjustable delay between products
+- Beautiful UI with animations
 
 ### Automated Test Suite
 
@@ -180,6 +206,32 @@ Content-Type: application/json
 DELETE http://localhost:3000/api/products/1
 ```
 
+### Stream Products (Server-Sent Events)
+```bash
+GET http://localhost:3000/api/products/stream?delay=500
+```
+
+This endpoint uses Server-Sent Events (SSE) to stream products in real-time to the browser. Each product is sent as a separate event.
+
+**JavaScript Example:**
+```javascript
+const eventSource = new EventSource('http://localhost:3000/api/products/stream?delay=500');
+
+eventSource.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+  
+  if (data.done) {
+    console.log('Stream completed');
+    eventSource.close();
+    return;
+  }
+  
+  if (data.product) {
+    console.log(`[${data.index}/${data.total}]`, data.product);
+  }
+};
+```
+
 ## 📝 gRPC Service Definition
 
 The service is defined in `proto/product.proto`:
@@ -191,8 +243,15 @@ service ProductService {
   rpc UpdateProduct(UpdateProductRequest) returns (ProductResponse);
   rpc DeleteProduct(DeleteProductRequest) returns (DeleteResponse);
   rpc ListProducts(ListProductsRequest) returns (ProductListResponse);
+  
+  // Server Streaming RPC - streams products one by one
+  rpc StreamProducts(StreamProductsRequest) returns (stream ProductStreamResponse);
 }
 ```
+
+**Key Features:**
+- **Unary RPCs**: Standard request-response pattern (CreateProduct, GetProduct, etc.)
+- **Server Streaming RPC**: `StreamProducts` - Server sends multiple responses for a single client request
 
 ## 🗄️ Database Schema
 

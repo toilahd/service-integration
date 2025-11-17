@@ -169,6 +169,41 @@ async function testListProducts() {
   });
 }
 
+// Test Server Streaming
+async function testStreamProducts() {
+  console.log('\n--- Test Stream Products (Server Streaming) ---');
+  const delay = await prompt('Enter delay between products in ms (default 500): ');
+
+  return new Promise((resolve, reject) => {
+    const call = client.StreamProducts({
+      delay_ms: parseInt(delay) || 500
+    });
+
+    let productCount = 0;
+    console.log('\n📡 Receiving streamed products...\n');
+
+    // Handle each streamed product
+    call.on('data', (response) => {
+      productCount++;
+      const { product, index, total } = response;
+      console.log(`[${index}/${total}] Received: ${product.name}`);
+      console.log(`         ID: ${product.id} | Price: $${product.price} | Stock: ${product.stock}`);
+    });
+
+    // Handle stream end
+    call.on('end', () => {
+      console.log(`\n✅ Stream completed! Received ${productCount} products.`);
+      resolve();
+    });
+
+    // Handle errors
+    call.on('error', (error) => {
+      console.error('❌ Stream error:', error.message);
+      reject(error);
+    });
+  });
+}
+
 // Run automated test suite
 async function runAutomatedTests() {
   console.log('\n🧪 Running Automated Test Suite...\n');
@@ -281,6 +316,39 @@ async function runAutomatedTests() {
   }
 }
 
+// Run streaming test
+async function runStreamingTest() {
+  console.log('\n🧪 Running Server Streaming Test...\n');
+
+  try {
+    console.log('Test: Stream all products with 300ms delay');
+    
+    await new Promise((resolve, reject) => {
+      const call = client.StreamProducts({ delay_ms: 300 });
+      let count = 0;
+
+      call.on('data', (response) => {
+        count++;
+        console.log(`  ✓ [${response.index}/${response.total}] ${response.product.name} - $${response.product.price}`);
+      });
+
+      call.on('end', () => {
+        console.log(`\n✅ Streaming test passed - Received ${count} products`);
+        resolve();
+      });
+
+      call.on('error', (error) => {
+        console.error('❌ Streaming test failed:', error.message);
+        reject(error);
+      });
+    });
+
+    console.log('\n✅ Streaming test completed!\n');
+  } catch (error) {
+    console.error('\n❌ Streaming test failed:', error.message);
+  }
+}
+
 // Main menu
 async function showMenu() {
   console.log('\n=================================');
@@ -292,6 +360,8 @@ async function showMenu() {
   console.log('4. Delete Product');
   console.log('5. List Products');
   console.log('6. Run Automated Tests');
+  console.log('7. Stream Products (Server Streaming Demo)');
+  console.log('8. Run Streaming Test');
   console.log('0. Exit');
   console.log('=================================');
 
@@ -316,6 +386,12 @@ async function showMenu() {
         break;
       case '6':
         await runAutomatedTests();
+        break;
+      case '7':
+        await testStreamProducts();
+        break;
+      case '8':
+        await runStreamingTest();
         break;
       case '0':
         console.log('Goodbye!');

@@ -46,6 +46,63 @@ const callGrpc = (method, request) => {
 
 // Routes
 
+// GET /api/products/stream - Stream products with Server-Sent Events (SSE)
+// IMPORTANT: This must come BEFORE /api/products/:id to avoid route conflict
+app.get('/api/products/stream', (req, res) => {
+  try {
+    const delay = parseInt(req.query.delay) || 500;
+
+    // Set headers for SSE
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+
+    console.log(`📡 Starting product stream with ${delay}ms delay...`);
+
+    // Create gRPC streaming call
+    const call = client.StreamProducts({ delay_ms: delay });
+
+    // Handle each streamed product
+    call.on('data', (response) => {
+      const data = {
+        product: response.product,
+        index: response.index,
+        total: response.total
+      };
+      // Send as SSE event
+      res.write(`data: ${JSON.stringify(data)}\n\n`);
+      res.flush && res.flush(); // Flush immediately if available
+    });
+
+    // Handle stream end
+    call.on('end', () => {
+      res.write('data: {"done": true}\n\n');
+      res.end();
+      console.log('✅ Product stream completed');
+    });
+
+    // Handle errors
+    call.on('error', (error) => {
+      console.error('❌ Stream error:', error);
+      res.write(`data: {"error": "${error.message}"}\n\n`);
+      res.end();
+    });
+
+    // Handle client disconnect
+    req.on('close', () => {
+      console.log('⚠️  Client disconnected from stream');
+      call.cancel();
+    });
+  } catch (error) {
+    console.error('Error setting up stream:', error);
+    res.status(500).json({
+      success: false,
+      message: error.details || 'Internal server error'
+    });
+  }
+});
+
 // GET /api/products - List all products
 app.get('/api/products', async (req, res) => {
   try {
@@ -217,6 +274,11 @@ app.get('/health', (req, res) => {
   res.json({ status: 'OK', message: 'REST Gateway is running' });
 });
 
+// Serve streaming demo page
+app.get('/stream-demo', (req, res) => {
+  res.sendFile(path.join(__dirname, 'stream-demo.html'));
+});
+
 // Start server
 const PORT = process.env.REST_PORT || 3000;
 app.listen(PORT, () => {
@@ -228,4 +290,6 @@ app.listen(PORT, () => {
   console.log(`  POST   http://localhost:${PORT}/api/products`);
   console.log(`  PUT    http://localhost:${PORT}/api/products/:id`);
   console.log(`  DELETE http://localhost:${PORT}/api/products/:id`);
+  console.log(`  GET    http://localhost:${PORT}/api/products/stream`);
+  console.log(`\n🎨 Stream Demo: http://localhost:${PORT}/stream-demo`);
 });

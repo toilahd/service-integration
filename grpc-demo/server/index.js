@@ -41,7 +41,8 @@ async function startServer() {
     GetProduct: productService.getProduct,
     UpdateProduct: productService.updateProduct,
     DeleteProduct: productService.deleteProduct,
-    ListProducts: productService.listProducts
+    ListProducts: productService.listProducts,
+    StreamProducts: productService.streamProducts
   });
 
   server.addService(randomProto.RandomService.service, {
